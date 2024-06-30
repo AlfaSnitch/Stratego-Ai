@@ -2,12 +2,69 @@ from const import *
 from square import Square
 from piece import *
 
+from move import Move
+
 class Board:
     def __init__(self):
         self.squares = [ [0,0,0,0,0,0,0,0,0,0] for col in range(COLS) ]
         self._create()
         self._add_pieces('red')
         self._add_pieces('blue')
+    
+    def cal_moves(self,piece,row,col):
+        
+        def stright_line_moves(incrs):
+            for incr in incrs:
+                row_incr,col_incr = incr
+                possible_move_row = row+row_incr
+                possible_move_col = col+col_incr
+                
+                
+                while True:
+                    if Square.in_range(possible_move_row, possible_move_col):
+                        # create squares of the possible new move
+                        initial = Square(row,col)
+                        final = Square(possible_move_row,possible_move_col)
+                        # create a possible new move
+                        move = Move(initial,final)
+                        
+                        #empty
+                        if self.squares[possible_move_row][possible_move_col].isempty():
+                            # append moves
+                            piece.add_move(move)
+                        
+                        #has enemy piece, add moves and break
+                        if self.squares[possible_move_row][possible_move_col].has_rival_piece(piece.color):
+                            piece.add_move(move)
+                            break 
+                        # has team piece == breaks
+                        if self.squares[possible_move_row][possible_move_col].has_team_piece(piece.color):
+                            break 
+                    # not in range
+                    else:
+                        break
+                        
+                    #incrementing incurs
+                    possible_move_row,possible_move_col = possible_move_row+row_incr,possible_move_col+col_incr
+
+        def 
+        
+        if isinstance(piece,Scout):
+            stright_line_moves([
+                (-1,0), # up 
+                (0,1), # left
+                (1,0), # down
+                (0,-1) # right
+            ])
+        
+        elif isinstance(piece,Bomb):
+            pass
+        elif isinstance(piece,Flag):
+            pass
+        else:
+            adjs = [
+                (row+1,col),(row,col+1),(row-1,col),(row,col-1)
+            ]
     
     def _create(self):
         
