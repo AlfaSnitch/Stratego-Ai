@@ -4,6 +4,7 @@ from board import Board
 from square import Square
 from dragger import Dragger
 
+from config import Config
 # Constants
 
 BACKGROUND_COLOR = (231, 212, 181)  # beige bg
@@ -15,6 +16,8 @@ class Game:
        self.board = Board()
        self.dragger = Dragger()
        self.next_player = 'red'
+       self.hovered_sqr = None
+       self.config = Config()
         
     # Show methods
     
@@ -55,9 +58,43 @@ class Game:
                 rect = (move.final.col * SQSIZE, move.final.row * SQSIZE, SQSIZE, SQSIZE)
                 #blit
                 pygame.draw.rect(surface, color, rect)
+                
+    def show_last_move(self,surface):
+        if self.board.last_move:
+            initial = self.board.last_move.initial
+            final = self.board.last_move.final
+            
+            for pos in [initial,final]:
+                #color
+                color = (175, 143, 111) 
+                # rect 
+                rect = (pos.col*SQSIZE,pos.row*SQSIZE,SQSIZE,SQSIZE)
+                #blit
+                pygame.draw.rect(surface, color, rect)
+    
+    def show_hover(self,surface):
+        if self.hovered_sqr:
+            #color
+                color = (180,180,180)
+                # rect 
+                rect = (self.hovered_sqr.col*SQSIZE,self.hovered_sqr.row*SQSIZE,SQSIZE,SQSIZE)
+                #blit
+                pygame.draw.rect(surface, color, rect,width=3)
+            
     
     def next_turn(self):
         if self.next_player == 'red':
             self.next_player = 'blue'
         else:
             self.next_player='red'
+    
+    def set_hover(self,row,col):
+        self.hovered_sqr = self.board.squares[row][col]
+        
+    def play_sound(self,captured=False):
+        if captured:
+            self.config.capture_sound.play()
+        else:
+            self.config.move_sound.play()
+    
+        

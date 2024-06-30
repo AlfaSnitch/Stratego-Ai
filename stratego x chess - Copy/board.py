@@ -17,17 +17,55 @@ class Board:
         final = move.final
         
         # console board move update
-        self.squares[initial.row][initial.col].piece = None
-        self.squares[final.row][final.col].piece = piece
+        i = self.squares[initial.row][initial.col]
+        j = self.squares[final.row][final.col]
         
-        # move
-        piece.moved = True
+        flag = False
+
+        if isinstance(i.piece,Miner) and isinstance(j.piece,Bomb):
+            j.piece = piece 
+            j.value = i.value
+            i.value = 0
+            i.piece = None
+        elif isinstance(i.piece, Spy) and isinstance(j.piece, Marshal):
+            j.piece = piece 
+            j.value = x
+            i.value = 0
+            i.piece = None
+        elif i.value >= j.value:
+            flag = True
         
-        # clear valid move
+        if flag:
+            x = i.value
+            y = j.value
+            if j.has_piece() and x > y:
+                j.piece = piece 
+                j.value = x
+                i.value = 0
+                i.piece = None
+            
+            elif j.has_piece() and x == y:
+                j.piece = None
+                j.value = 0
+                i.value = 0   
+                i.piece = None
+            else:
+                j.piece = piece 
+                x = i.value
+                j.value = x
+                i.value = 0
+                i.piece = None
+        elif j.value > i.value:
+            i.piece = None
+            i.val = 0
+            # move
+        piece.moved = True    
+            # clear valid move
         piece.clear_moves()
-        #set last move
+            #set last move
         self.last_move = move
-    
+        
+ 
     def valid_move(self,piece,move):
         return move in piece.moves
     
@@ -39,8 +77,8 @@ class Board:
                 possible_move_row = row+row_incr
                 possible_move_col = col+col_incr
                 
-                
                 while True:
+                    
                     if Square.in_range(possible_move_row, possible_move_col):
                         # create squares of the possible new move
                         initial = Square(row,col)
@@ -65,7 +103,8 @@ class Board:
                         break
                         
                     #incrementing incurs
-                    possible_move_row,possible_move_col = possible_move_row+row_incr,possible_move_col+col_incr
+                    possible_move_row = possible_move_row +row_incr
+                    possible_move_col = possible_move_col+col_incr
 
         def piece_move():
             adjs = [
@@ -82,6 +121,7 @@ class Board:
                         move = Move(initial,final)
                         
                         piece.add_move(move)
+
         
         if isinstance(piece,Scout):
             stright_line_moves([
@@ -102,7 +142,7 @@ class Board:
         
         for row in range(ROWS):
             for col in range(COLS):
-                self.squares[row][col] = Square(row,col)
+                self.squares[row][col] = Square(row,col,-1)
         
     def _add_pieces(self,color):
         row_pl = [0,1,2,3]
@@ -112,7 +152,7 @@ class Board:
                  ['flag', 'bomb', 'miner', 'sergeant', 'miner', 'miner', 'miner', 'sergeant', 'miner', 'sergeant'],
                  ['bomb', 'scout', 'lieutenant', 'scout', 'lieutenant', 'captain', 'bomb', 'lieutenant', 'major', 'bomb'],
                  ['scout', 'major', 'scout', 'lieutenant', 'scout', 'captain', 'captain', 'spy', 'general', 'bomb'],
-                 ['captain', 'scout', 'colonel', 'marshal', 'major', 'scout', 'colonel', 'bomb', 'sergeant', 'scout']
+                 ['captain', 'scout', 'colonel', 'marshal', 'major', 'scout', 'colonel', 'miner', 'sergeant', 'scout']
                 ]
 
         # for organic player
@@ -120,29 +160,29 @@ class Board:
             for c in range(COLS):
                 s = grid[r][c]
                 if(s == 'flag'):
-                   self.squares[r][c] = Square(r,c,Flag(color))
+                   self.squares[r][c] = Square(r,c,0,Flag(color))
                 elif s=='bomb':
-                    self.squares[r][c] = Square(r,c,Bomb(color)) 
+                    self.squares[r][c] = Square(r,c,11,Bomb(color)) 
                 elif s=='miner':
-                    self.squares[r][c] = Square(r,c,Miner(color)) 
+                    self.squares[r][c] = Square(r,c,3,Miner(color)) 
                 elif s=='sergeant':
-                    self.squares[r][c] = Square(r,c,Sergeant(color)) 
+                    self.squares[r][c] = Square(r,c,4,Sergeant(color)) 
                 elif s=='scout':
-                    self.squares[r][c] = Square(r,c,Scout(color)) 
+                    self.squares[r][c] = Square(r,c,2,Scout(color)) 
                 elif s=='major':
-                    self.squares[r][c] = Square(r,c,Major(color)) 
+                    self.squares[r][c] = Square(r,c,7,Major(color)) 
                 elif s=='colonel':
-                    self.squares[r][c] = Square(r,c,Colonel(color)) 
+                    self.squares[r][c] = Square(r,c,8,Colonel(color)) 
                 elif s=='captain':
-                    self.squares[r][c] = Square(r,c,Captain(color)) 
+                    self.squares[r][c] = Square(r,c,6,Captain(color)) 
                 elif s=='spy':
-                    self.squares[r][c] = Square(r,c,Spy(color)) 
+                    self.squares[r][c] = Square(r,c,1,Spy(color)) 
                 elif s=='marshal':
-                    self.squares[r][c] = Square(r,c,Marshal(color)) 
+                    self.squares[r][c] = Square(r,c,10,Marshal(color)) 
                 elif s=='lieutenant':
-                    self.squares[r][c] = Square(r,c,Lieutenant(color)) 
+                    self.squares[r][c] = Square(r,c,5,Lieutenant(color)) 
                 elif s=='general':
-                    self.squares[r][c] = Square(r,c,General(color)) 
+                    self.squares[r][c] = Square(r,c,9,General(color)) 
             
         # for ai 
         if(color == 'red'):
@@ -151,29 +191,29 @@ class Board:
                 for c in range(COLS):
                     s = grid[r1][c]
                     if(s == 'flag'):
-                        self.squares[r][c] = Square(r,c,Flag(color))
+                        self.squares[r][c] = Square(r,c,0,Flag(color))
                     elif s=='bomb':
-                        self.squares[r][c] = Square(r,c,Bomb(color)) 
+                        self.squares[r][c] = Square(r,c,11,Bomb(color)) 
                     elif s=='miner':
-                        self.squares[r][c] = Square(r,c,Miner(color)) 
+                        self.squares[r][c] = Square(r,c,3,Miner(color)) 
                     elif s=='sergeant':
-                        self.squares[r][c] = Square(r,c,Sergeant(color)) 
+                        self.squares[r][c] = Square(r,c,4,Sergeant(color)) 
                     elif s=='scout':
-                        self.squares[r][c] = Square(r,c,Scout(color)) 
+                        self.squares[r][c] = Square(r,c,2,Scout(color)) 
                     elif s=='major':
-                        self.squares[r][c] = Square(r,c,Major(color)) 
+                        self.squares[r][c] = Square(r,c,7,Major(color)) 
                     elif s=='colonel':
-                        self.squares[r][c] = Square(r,c,Colonel(color)) 
+                        self.squares[r][c] = Square(r,c,8,Colonel(color)) 
                     elif s=='captain':
-                        self.squares[r][c] = Square(r,c,Captain(color)) 
+                        self.squares[r][c] = Square(r,c,6,Captain(color)) 
                     elif s=='spy':
-                        self.squares[r][c] = Square(r,c,Spy(color)) 
+                        self.squares[r][c] = Square(r,c,1,Spy(color)) 
                     elif s=='marshal':
-                        self.squares[r][c] = Square(r,c,Marshal(color))  
+                        self.squares[r][c] = Square(r,c,10,Marshal(color)) 
                     elif s=='lieutenant':
-                        self.squares[r][c] = Square(r,c,Lieutenant(color)) 
+                        self.squares[r][c] = Square(r,c,5,Lieutenant(color)) 
                     elif s=='general':
-                        self.squares[r][c] = Square(r,c,General(color)) 
+                        self.squares[r][c] = Square(r,c,9,General(color)) 
 
 
                 

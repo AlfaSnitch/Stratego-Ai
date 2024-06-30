@@ -12,5 +12,5 @@ class Move:
         s+=f' -> ({self.final.col},{self.final.row})'
         return s
     
-    def __eq__(self,other):
-        return self.initial == other.initial and self.final == other.final 
+    def __eq__(self, other):
+        return self.initial == other.initial and self.final == other.final
