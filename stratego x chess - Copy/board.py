@@ -11,6 +11,12 @@ class Board:
         self._add_pieces('red')
         self._add_pieces('blue')
     
+    def move(self, piece, move):
+        pass
+    
+    def valid_move(self,piece,move):
+        return move in piece.moves
+    
     def cal_moves(self,piece,row,col):
         
         def stright_line_moves(incrs):
@@ -47,7 +53,21 @@ class Board:
                     #incrementing incurs
                     possible_move_row,possible_move_col = possible_move_row+row_incr,possible_move_col+col_incr
 
-        def 
+        def piece_move():
+            adjs = [
+                (row+1,col),(row-1,col),(row,col+1),(row,col-1)
+            ]
+            
+            for possible_move in adjs:
+                possible_move_row, possible_move_col = possible_move
+                if Square.in_range(possible_move_row,possible_move_col):
+                    if self.squares[possible_move_row][possible_move_col].isempty_or_rival(piece.color):
+                        initial = Square(row,col)
+                        final = Square(possible_move_row,possible_move_col)
+                        
+                        move = Move(initial,final)
+                        
+                        piece.add_move(move)
         
         if isinstance(piece,Scout):
             stright_line_moves([
@@ -62,9 +82,7 @@ class Board:
         elif isinstance(piece,Flag):
             pass
         else:
-            adjs = [
-                (row+1,col),(row,col+1),(row-1,col),(row,col-1)
-            ]
+            piece_move()
     
     def _create(self):
         
@@ -137,7 +155,7 @@ class Board:
                     elif s=='spy':
                         self.squares[r][c] = Square(r,c,Spy(color)) 
                     elif s=='marshal':
-                        self.squares[r][c] = Square(r,c,Marshal(color)) 
+                        self.squares[r][c] = Square(r,c,Marshal(color))  
                     elif s=='lieutenant':
                         self.squares[r][c] = Square(r,c,Lieutenant(color)) 
                     elif s=='general':

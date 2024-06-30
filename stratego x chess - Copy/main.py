@@ -46,7 +46,7 @@ class Main:
                         game.show_moves(screen)
                         game.show_pieces(screen)
                 
-                #motion
+                # motion 
                 elif event.type == pygame.MOUSEMOTION:
                     if dragger.dragging:
                         dragger.update_mouse(event.pos)
