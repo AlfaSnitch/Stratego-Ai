@@ -14,6 +14,7 @@ class Game:
     def __init__(self):
        self.board = Board()
        self.dragger = Dragger()
+       self.next_player = 'red'
         
     # Show methods
     
@@ -54,3 +55,9 @@ class Game:
                 rect = (move.final.col * SQSIZE, move.final.row * SQSIZE, SQSIZE, SQSIZE)
                 #blit
                 pygame.draw.rect(surface, color, rect)
+    
+    def next_turn(self):
+        if self.next_player == 'red':
+            self.next_player = 'blue'
+        else:
+            self.next_player='red'

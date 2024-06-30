@@ -7,12 +7,26 @@ from move import Move
 class Board:
     def __init__(self):
         self.squares = [ [0,0,0,0,0,0,0,0,0,0] for col in range(COLS) ]
+        self.last_move = None
         self._create()
         self._add_pieces('red')
         self._add_pieces('blue')
     
     def move(self, piece, move):
-        pass
+        initial = move.initial
+        final = move.final
+        
+        # console board move update
+        self.squares[initial.row][initial.col].piece = None
+        self.squares[final.row][final.col].piece = piece
+        
+        # move
+        piece.moved = True
+        
+        # clear valid move
+        piece.clear_moves()
+        #set last move
+        self.last_move = move
     
     def valid_move(self,piece,move):
         return move in piece.moves
