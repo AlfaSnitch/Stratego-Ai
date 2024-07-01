@@ -11,6 +11,70 @@ class Board:
         self._create()
         self._add_pieces('red')
         self._add_pieces('blue')
+        
+    def get_all_moves(board, player):
+        moves = []
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, down, left, right
+
+        for row in range(len(board.squares)):
+            for col in range(len(board.squares[row])):
+                square = board.squares[row][col]
+                if square.has_piece() and square.piece.color == player:
+                    for d in directions:
+                        new_row, new_col = row + d[0], col + d[1]
+                        if 0 <= new_row < len(board.squares) and 0 <= new_col < len(board.squares[row]):
+                            target_square = board.squares[new_row][new_col]
+                            if not target_square.has_piece() or target_square.piece.color != player:
+                                moves.append(((row, col), (new_row, new_col)))
+
+        return moves
+
+    
+    def evaluate_board(self):
+        score = 0
+        for row in self.squares:
+            for square in row:
+                if square.has_piece():
+                    piece = square.piece
+                    if not piece == None:
+                        if piece.color == 'red':
+                            score -= piece.value
+                        elif piece.color == 'blue':
+                            score += piece.value
+        print(score)
+
+    def gameover_by_notmoving(self):
+        red_move = False
+        blue_move = False
+        for i in range(ROWS):
+            for j in range(COLS):
+                piece = self.squares[i][j].piece
+                if not piece == None:
+                    if piece.color == 'red' and self.squares[i][j].value>0:
+                        red_move = True
+                    elif piece.color == 'blue' and self.squares[i][j].value>0:
+                        blue_move = True
+        
+        return not red_move or not blue_move
+                
+    
+    def gameover_by_win(self,piece,final):
+        red_flag = blue_flag = False
+        red_has_moves = blue_has_moves = False
+        
+        j = self.squares[final.row][final.col]
+        
+        if isinstance(j.piece,Flag):
+            if piece.color == 'red':
+                print('red wins')
+                return True
+            else: 
+                print('blue wins')
+                return True
+        return False
+                
+        
+            
     
     def move(self, piece, move):
         initial = move.initial
@@ -144,19 +208,26 @@ class Board:
         
         for row in range(ROWS):
             for col in range(COLS):
-                self.squares[row][col] = Square(row,col,-1)
+                self.squares[row][col] = Square(row,col)
         
     def _add_pieces(self,color):
         row_pl = [0,1,2,3]
         row_ai = [9,8,7,6]
-        
+        '''
+        grid = [ 
+                 ['flag', 'bomb', 'miner', 'sergeant', 'miner', 'miner', 'miner', 'sergeant', 'miner', 'sergeant'],
+                 ['bomb', 'scout', 'lieutenant', 'scout', 'lieutenant', 'captain', 'bomb', 'lieutenant', 'major', 'bomb'],
+                 ['scout', 'major', 'scout', 'lieutenant', 'scout', 'captain', 'captain', 'spy', 'general', 'bomb'],
+                 ['bomb', 'bomb', 'bomb', 'bomb', 'bomb','bomb', 'bomb', 'bomb', 'bomb', 'bomb']
+        ]
+        '''
         grid = [ 
                  ['flag', 'bomb', 'miner', 'sergeant', 'miner', 'miner', 'miner', 'sergeant', 'miner', 'sergeant'],
                  ['bomb', 'scout', 'lieutenant', 'scout', 'lieutenant', 'captain', 'bomb', 'lieutenant', 'major', 'bomb'],
                  ['scout', 'major', 'scout', 'lieutenant', 'scout', 'captain', 'captain', 'spy', 'general', 'bomb'],
                  ['captain', 'scout', 'colonel', 'marshal', 'major', 'scout', 'colonel', 'bomb', 'sergeant', 'spy']
                 ]
-
+       
         # for organic player
         for r in row_pl:
             for c in range(COLS):
@@ -188,6 +259,7 @@ class Board:
             
         # for ai 
         if(color == 'red'):
+
             for r in row_ai:
                 r1 = abs(r-9)
                 for c in range(COLS):
@@ -218,5 +290,3 @@ class Board:
                         self.squares[r][c] = Square(r,c,9,General(color)) 
 
 
-                
-            

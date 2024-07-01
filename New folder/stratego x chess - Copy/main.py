@@ -94,15 +94,31 @@ class Main:
                         if board.valid_move(dragger.piece,move):
                             captured = board.squares[relaeased_row][relaeased_col].has_piece()
                             board.move(dragger.piece,move)
+                            board.evaluate_board()
+                            if board.gameover_by_win(dragger.piece,move.final) or board.gameover_by_notmoving():
+                                game.reset()
+                                game = self.game
+                                dragger = self.game.dragger
+                                board = self.game.board
+                                
+                            else:
                                 #draw                          
-                            game.play_sound(captured)
-                            game.show_bg(screen)
-                            game.show_last_move(screen)
-                            game.show_pieces(screen)
-                            #next turn
-                            game.next_turn()
+                                game.play_sound(captured)
+                                game.show_bg(screen)
+                                game.show_last_move(screen)
+                                game.show_pieces(screen)
+                                #next turn
+                                game.next_turn()
                     
                     dragger.undrag_piece()
+                
+                elif event.type == pygame.KEYDOWN:
+                    # restarting the game
+                    if event.key == pygame.K_r:
+                        game.reset()
+                        game = self.game
+                        dragger = self.game.dragger
+                        board = self.game.board
                 
                 elif event.type == pygame.QUIT:
                     pygame.quit()
