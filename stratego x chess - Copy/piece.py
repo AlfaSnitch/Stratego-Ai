@@ -16,7 +16,7 @@ class Piece:
         self.set_texture()
         self.texture_rect = texture_rect
         
-        self.hidden = False
+        self.hidden = True
     
     def revealed(self):
         self.hidden = False

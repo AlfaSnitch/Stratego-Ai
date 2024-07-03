@@ -37,9 +37,9 @@ class Board:
             for square in row:
                 if square.has_piece():
                     piece = square.piece
-                    if piece.color == 'blue':
+                    if piece.color == 'not':
                         score += piece_values[piece.name]
-                        if piece.revealed:
+                        if not piece.revealed:
                             if piece.name == 'scout':
                                 score += 2  # Scouts revealing pieces
                             elif piece.name == 'miner':
@@ -191,27 +191,59 @@ class Board:
             
         return new_board
  
+ 
     def ai_move(self, move):
 
         initial_pos=move.initial
         final_pos = move.final
-        initial_square = self.squares[initial_pos.row][initial_pos.col]
-        final_square = self.squares[final_pos.row][final_pos.col]
+        i = self.squares[initial_pos.row][initial_pos.col]
+        j = self.squares[final_pos.row][final_pos.col]
 
-        initial_square.piece.moved = True 
+        i.piece.moved = True 
         
-        final_square.piece = initial_square.piece
-        final_square.value = initial_square.value
-        
-        initial_pos.piece.moved = True
-        initial_pos.piece.moves = []
-        
-        initial_square.piece = None
-        initial_square.value = 0
-        
-           
+        flag = False
 
-            #set last move
+        if isinstance(i.piece,Miner) and isinstance(j.piece,Bomb):
+            j.piece = i.piece 
+            j.value = i.value
+            i.value = 0
+            i.piece = None
+        elif isinstance(i.piece, Spy) and isinstance(j.piece, Marshal):
+            j.piece = i.piece 
+            j.value = i.value
+            i.value = 0
+            i.piece = None
+        elif i.value >= j.value:
+            flag = True
+        
+        if flag:
+            x = i.value
+            y = j.value
+            if j.has_piece() and x > y:
+                j.piece = i.piece 
+                j.value = x
+                i.value = 0
+                i.piece = None
+            
+            elif j.has_piece() and x == y:
+                j.piece = None
+                j.value = 0
+                i.value = 0   
+                i.piece = None
+            else:
+                j.piece = i.piece 
+                x = i.value
+                j.value = x
+                i.value = 0
+                i.piece = None
+        elif j.value > i.value:
+            i.piece = None
+            i.value = 0
+            piece = j.piece
+            piece.revealed()
+            # move
+   
+        #set last move
         self.last_move = move
         
         # if final_square.has_piece() and final_square.piece.color != initial_square.piece.color:
@@ -469,11 +501,13 @@ class Board:
         else:
             piece_move()
     
+    
     def _create(self):
         
         for row in range(ROWS):
             for col in range(COLS):
                 self.squares[row][col] = Square(row,col)
+        
         
     def _add_pieces(self,color):
         row_pl = [0,1,2,3]

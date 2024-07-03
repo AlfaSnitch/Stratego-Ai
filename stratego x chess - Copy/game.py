@@ -155,22 +155,22 @@ class Game:
         # order moves according to some heuristics
         ordered_moves = self.order_moves(all_moves)
 
-        for current_depth in range(1, depth + 1):
-            for move in ordered_moves:
-                new_board = self.board.make_move(move)
-                board_value = new_board.minimax(current_depth - 1, alpha, beta, self.next_player == 'red')
-                if self.next_player == 'blue' and board_value > best_value:
-                    best_value = board_value
-                    best_move = move
-                elif self.next_player == 'red' and board_value < best_value:
-                    best_value = board_value
-                    best_move = move
-                if self.next_player == 'blue':
-                    alpha = max(alpha, board_value)
-                else:
-                    beta = min(beta, board_value)
-                if beta <= alpha:
-                    break
+
+        for move in ordered_moves:
+            new_board = self.board.make_move(move)
+            board_value = new_board.minimax(depth - 1, alpha, beta, self.next_player == 'red')
+            if self.next_player == 'blue' and board_value > best_value:
+                best_value = board_value
+                best_move = move
+            elif self.next_player == 'red' and board_value < best_value:
+                best_value = board_value
+                best_move = move
+            if self.next_player == 'blue':
+                alpha = max(alpha, board_value)
+            else:
+                beta = min(beta, board_value)
+            if beta <= alpha:
+                break
 
         return best_move
 
