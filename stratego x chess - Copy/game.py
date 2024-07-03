@@ -38,12 +38,15 @@ class Game:
                     
                     # all piece except dragger piece
                     if piece is not self.dragger.piece:
-                        
-                        img = pygame.image.load(piece.texture)
-                        img_center = col*SQSIZE + SQSIZE//2 , row*SQSIZE+SQSIZE//2
-                        
-                        piece.texture_rect = img.get_rect(center= img_center)
-                        surface.blit(img,piece.texture_rect)
+                        if 'blue' == piece.color and piece.hidden:
+                            color = (150, 201, 244) if (row +col)%2 ==0 else (63, 162, 246)
+                            pygame.draw.rect(surface, color, pygame.Rect(col * SQSIZE, row * SQSIZE, SQSIZE, SQSIZE),width=5)
+                        else:
+                            img = pygame.image.load(piece.texture)
+                            img_center = col*SQSIZE + SQSIZE//2 , row*SQSIZE+SQSIZE//2
+                            
+                            piece.texture_rect = img.get_rect(center= img_center)
+                            surface.blit(img,piece.texture_rect)
 
     
     def show_moves(self,surface):
@@ -60,6 +63,7 @@ class Game:
                 pygame.draw.rect(surface, color, rect)
                 
     def show_last_move(self,surface):
+        
         if self.board.last_move:
             initial = self.board.last_move.initial
             final = self.board.last_move.final
@@ -96,5 +100,79 @@ class Game:
             self.config.capture_sound.play()
         else:
             self.config.move_sound.play()
+            
+    def reset(self):
+        self.__init__()
+     
+    
+    def order_moves(self, moves):
+    # Heuristic for move ordering: prioritize capturing important pieces, disarming bombs, and advancing pieces
+        def move_value(move):
+            initial_piece = move.initial.piece
+            target_piece = move.final.piece
+
+            value = 0
+
+            # Capturing pieces
+            if target_piece:
+                value += target_piece.value * 10  # Prioritize capturing higher value pieces
+                if target_piece.name == 'flag':
+                    value += 1000  # Highest priority to capture the flag
+                elif target_piece.name == 'marshal':
+                    value += 500  # High priority to capture the marshal
+                elif target_piece.name == 'bomb':
+                    if initial_piece.name == 'miner':
+                        value += 300  # Miners disarming bombs
+                    else:
+                        value += 200  # Capturing a bomb with other pieces
+
+
+            # Advancing pieces
+            if initial_piece.color == 'blue':
+                value += move.final.row  # Prefer advancing towards the opponent's side for blue
+            else:
+                value += (len(self.board.squares) - move.final.row - 1)  # Prefer advancing towards the opponent's side for red
+
+            # Scouting moves
+            if initial_piece.name == 'scout' and target_piece:
+                value += 1000 
+
+            return value
+
+        # Sort moves by the heuristic value in descending order
+        return sorted(moves, key=move_value, reverse=True)
+        
+        
+    def get_best_move(self, depth):
+        best_move = None
+        best_value = float('-inf') if self.next_player == 'blue' else float('inf')
+        alpha = float('-inf')
+        beta = float('inf')
+        
+        #get all possible moves 
+        all_moves = self.board.get_all_moves(self.next_player)
+        
+        # order moves according to some heuristics
+        ordered_moves = self.order_moves(all_moves)
+
+        for current_depth in range(1, depth + 1):
+            for move in ordered_moves:
+                new_board = self.board.make_move(move)
+                board_value = new_board.minimax(current_depth - 1, alpha, beta, self.next_player == 'red')
+                if self.next_player == 'blue' and board_value > best_value:
+                    best_value = board_value
+                    best_move = move
+                elif self.next_player == 'red' and board_value < best_value:
+                    best_value = board_value
+                    best_move = move
+                if self.next_player == 'blue':
+                    alpha = max(alpha, board_value)
+                else:
+                    beta = min(beta, board_value)
+                if beta <= alpha:
+                    break
+
+        return best_move
+
     
         

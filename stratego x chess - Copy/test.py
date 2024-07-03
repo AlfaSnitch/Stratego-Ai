@@ -10,7 +10,7 @@ for i in li:
     
     # Save the resized image
         resized_img.save(f'assests/img/{i}.png')
-'''
+
 
 from PIL import Image, ImageOps
 
@@ -31,4 +31,8 @@ li = ['bomb','flag','captain','colonel','general','lieutenant','major','marshal'
 for i in li:
     resize_and_add_border(f'assests/images2/img/{i}.png', f'assests/img/{i}_blue.png',border_color='blue')
     resize_and_add_border(f'assests/images2/img/{i}.png', f'assests/img/{i}_red.png',border_color='red')
+'''
 
+li = []
+li.append(((1,2),(2,1)))
+print(li)

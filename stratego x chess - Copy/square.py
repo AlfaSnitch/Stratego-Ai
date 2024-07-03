@@ -4,6 +4,8 @@ class Square:
         self.col = col
         self.piece = piece
         self.value = value
+
+
         
     def __eq__(self, other):
         return self.row == other.row and self.col == other.col

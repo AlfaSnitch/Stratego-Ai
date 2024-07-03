@@ -11,7 +11,6 @@ class Dragger:
         self.initial_col = 0
         self.piece = None
         self.dragging = False
-    
     #blit method
     
     def update_blit(self,surface):
@@ -21,8 +20,9 @@ class Dragger:
         img = pygame.image.load(texture)
         
         img_center = (self.mouseX,self.mouseY)
-        self.piece.texture_rect = img.get_rect(center=img_center)
         
+
+        self.piece.texture_rect = img.get_rect(center=img_center)
         surface.blit(img,self.piece.texture_rect)
         
         
