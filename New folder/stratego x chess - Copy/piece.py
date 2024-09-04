@@ -35,65 +35,65 @@ class Piece:
 class Spy(Piece):
 
     def __init__(self, color):
-        super().__init__('spy', color, 1.0)
+        super().__init__('spy', color, 1)
         
 class Scout(Piece): # like a rook
 
     def __init__(self, color):
-        super().__init__('scout', color, 2.0)
+        super().__init__('scout', color, 2)
         
 class Miner(Piece):
 
     def __init__(self, color):
-        super().__init__('miner', color, 3.0)
+        super().__init__('miner', color, 3)
       
       
 class Sergeant(Piece):
 
     def __init__(self, color):
-        super().__init__('sergeant', color, 4.0)
+        super().__init__('sergeant', color, 4)
      
 
 class Lieutenant(Piece):
 
     def __init__(self, color):
-        super().__init__('lieutenant', color, 5.0)
+        super().__init__('lieutenant', color, 5)
       
       
 class Captain(Piece):
 
     def __init__(self, color):
-        super().__init__('captain', color, 6.0)
+        super().__init__('captain', color, 6)
         
 class Major(Piece):
 
     def __init__(self, color):
-        super().__init__('major', color, 7.0)
+        super().__init__('major', color, 7)
 
 class Colonel(Piece):
 
     def __init__(self, color):
-        super().__init__('colonel', color, 8.0)
+        super().__init__('colonel', color, 8)
 
 class General(Piece):
 
     def __init__(self, color):
-        super().__init__('general', color, 9.0)
+        super().__init__('general', color, 9)
 
 class Marshal(Piece):
 
     def __init__(self, color):
-        super().__init__('marshal', color, 10.0)
+        super().__init__('marshal', color, 10)
         
 class Flag(Piece):
 
     def __init__(self, color):
-        super().__init__('flag', color, 10000.0)
+        super().__init__('flag', color, 100000000)
 
 class Bomb(Piece):
 
     def __init__(self, color):
-        super().__init__('bomb', color, 13.0)
+        super().__init__('bomb', color, 13)
             
       
       

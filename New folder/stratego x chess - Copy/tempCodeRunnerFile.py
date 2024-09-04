@@ -1,2 +1,1 @@
-if dragger.dragging:
-            
+membership_function

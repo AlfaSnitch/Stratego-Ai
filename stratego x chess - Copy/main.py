@@ -107,6 +107,7 @@ class Main:
                             if board.valid_move(dragger.piece,move):
                                 captured = board.squares[relaeased_row][relaeased_col].has_piece()
                                 board.move(dragger.piece,move)
+                                game.evaluate_human_move(move)
                                 #board.evaluate_board()
                                 if board.gameover_by_win(dragger.piece,move.final) or board.gameover_by_notmoving():
                                     game.reset()

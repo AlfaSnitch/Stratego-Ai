@@ -7,9 +7,8 @@ class Move:
         self.final = final
         
     def __str__(self):
-        s = ''
-        s+=f'({self.initial.col},{self.initial.row})'
-        s+=f' -> ({self.final.col},{self.final.row})'
+        s = []
+        s.append(((self.initial,self.final)))
         return s
     
     def __eq__(self, other):
